@@ -1,0 +1,62 @@
+{
+  "sdk": 6,
+  "version": 100,
+  "name": "Websockets",
+  "id": "gitago.websockets",
+  "configuration": {
+    "colorDark": "#222423",
+    "colorLight": "#43a047"
+  },
+  "plugin_start_cmd": "%TP_PLUGIN_FOLDER%Websocket Plugin\\Websockets_TP.exe",
+  "plugin_start_cmd_windows": "%TP_PLUGIN_FOLDER%Websocket Plugin\\Websockets_TP.exe",
+  "categories": [
+    {
+      "id": "gitago.websockets.main",
+      "name": "Websockets Main Category",
+      "imagepath": "%TP_PLUGIN_FOLDER%Websocket Plugin\\Websockets_Logo.png",
+      "actions": [
+        {
+          "id": "gitago.websockets.act.send_message",
+          "name": "Send Websocket Message",
+          "prefix": "Prefix",
+          "type": "communicate",
+          "description": "Connect & Send a Message to specified Websocket. \n Example URL:  ws://localhost:9000",
+          "format": "Websocket URL:{$gitago.websockets.act.send_message.url$} Message:{$gitago.websockets.act.send_message.content$}",
+          "tryInline": true,
+          "data": [
+            {
+              "id": "gitago.websockets.act.send_message.url",
+              "type": "text",
+              "label": "The IP and Port of the Websocket",
+              "default": "ws://localhost:9000"
+            },
+            {
+              "id": "gitago.websockets.act.send_message.content",
+              "type": "text",
+              "label": "The Code or Message to Send",
+              "default": ""
+            }
+          ]
+        }
+      ],
+      "states": [
+        {
+          "id": "gitago.websockets.state.response",
+          "type": "text",
+          "desc": "WS | Websocket Response",
+          "default": ""
+        }
+      ],
+      "events": [],
+      "connectors": []
+    }
+  ],
+  "settings": [
+    {
+      "name": "Debug",
+      "type": "text",
+      "default": "False",
+      "readOnly": false
+    }
+  ]
+}
