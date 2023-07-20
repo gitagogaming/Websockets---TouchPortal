@@ -1,6 +1,6 @@
 {
   "sdk": 6,
-  "version": 100,
+  "version": 102,
   "name": "Websockets",
   "id": "gitago.websockets",
   "configuration": {
@@ -20,8 +20,8 @@
           "name": "Send Websocket Message",
           "prefix": "Prefix",
           "type": "communicate",
-          "description": "Connect & Send a Message to specified Websocket. \n Example URL:  ws://localhost:9000",
-          "format": "Websocket URL:{$gitago.websockets.act.send_message.url$} Message:{$gitago.websockets.act.send_message.content$}",
+          "description": "Connect & Send a Message to specified Websocket. Example URL:  ws://localhost:9000",
+          "format": "Websocket URL:{$gitago.websockets.act.send_message.url$} Message:{$gitago.websockets.act.send_message.content$} with Socket Name:{$gitago.websockets.act.send_message.socket$}",
           "tryInline": true,
           "data": [
             {
@@ -35,15 +35,38 @@
               "type": "text",
               "label": "The Code or Message to Send",
               "default": ""
+            },
+            {
+              "id": "gitago.websockets.act.send_message.socket",
+              "type": "text",
+              "label": "The Socket Name",
+              "default": ""
+            }
+          ]
+        },
+        {
+          "id": "gitago.websockets.act.disconnect",
+          "name": "Disconnect Websocket",
+          "prefix": "Prefix",
+          "type": "communicate",
+          "description": "Disconnect a Websocket.",
+          "format": "Websocket with Socket Name:{$gitago.websockets.act.disconnect.socket$}",
+          "tryInline": true,
+          "data": [
+            {
+              "id": "gitago.websockets.act.disconnect.socket",
+              "type": "text",
+              "label": "The Socket Name",
+              "default": ""
             }
           ]
         }
       ],
       "states": [
         {
-          "id": "gitago.websockets.state.response",
+          "id": "gitago.websockets.state.sockets_open",
           "type": "text",
-          "desc": "WS | Websocket Response",
+          "desc": "WS | Total Websockets Open",
           "default": ""
         }
       ],

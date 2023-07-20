@@ -4,7 +4,7 @@ PLUGIN_ID = "gitago.websockets"
 
 TP_PLUGIN_INFO = {
     "sdk": 6,
-    "version": 100,
+    "version": 102,
     "name": "Websockets",
     "id": PLUGIN_ID,
     "plugin_start_cmd_windows": "%TP_PLUGIN_FOLDER%Websocket Plugin\\Websockets_TP.exe",
@@ -46,8 +46,8 @@ TP_PLUGIN_ACTIONS = {
         "prefix": "Prefix",
         "type": "communicate",
         "tryInline": True,
-        "description": "Connect & Send a Message to specified Websocket. \n Example URL:  ws://localhost:9000",
-        "format": "Websocket URL:$[1] Message:$[2]",
+        "description": "Connect & Send a Message to specified Websocket. Example URL:  ws://localhost:9000",
+        "format": "Websocket URL:$[1] Message:$[2] with Socket Name:$[3]",
         "data": {
             "1": {
                 "id": PLUGIN_ID + ".act.send_message.url",
@@ -60,6 +60,30 @@ TP_PLUGIN_ACTIONS = {
                 "type": "text",
                 "label": "The Code or Message to Send",
                 "default": ""
+            },
+            "3": {
+                "id": PLUGIN_ID + ".act.send_message.socket",
+                "type": "text",
+                "label": "The Socket Name",
+                "default": ""
+            }   
+        },
+        "category": "main"
+    },
+    "2": {
+        "id": PLUGIN_ID + ".act.disconnect",
+        "name": "Disconnect Websocket",
+        "prefix": "Prefix",
+        "type": "communicate",
+        "tryInline": True,
+        "description": "Disconnect a Websocket.",
+        "format": "Websocket with Socket Name:$[1]",
+        "data": {
+            "1": {
+                "id": PLUGIN_ID + ".act.disconnect.socket",
+                "type": "text",
+                "label": "The Socket Name",
+                "default": ""
             }
         },
         "category": "main"
@@ -70,9 +94,9 @@ TP_PLUGIN_ACTIONS = {
 
 TP_PLUGIN_STATES = {
     "0": {
-        "id": PLUGIN_ID + ".state.response",
+        "id": PLUGIN_ID + ".state.sockets_open",
         "type": "text",
-        "desc": "WS | Websocket Response",
+        "desc": "WS | Total Websockets Open",
         "default": "",
         "category": "main"
     }
@@ -80,6 +104,27 @@ TP_PLUGIN_STATES = {
 
 
 
-TP_PLUGIN_EVENTS = {}
+TP_PLUGIN_EVENTS = {
+ #  "0": {
+ #      'id': PLUGIN_ID + ".event.socket.closed",
+ #      'name':"WS | Socket Closed",
+ #      'category': "main",
+ #      "format":"When Socket Closes for $val",
+ #      "type":"communicate",
+ #      "valueType":"choice",
+ #      "valueChoices": [],
+ #      "valueStateId": PLUGIN_ID + ".state.socket.closed",
+ #		},
+ #  "1": {
+ #      'id': PLUGIN_ID + ".event.socket.opened",
+ #      'name':"WS | Socket Opened",
+ #      'category': "main",
+ #      "format":"When Socket Opens for $val",
+ #      "type":"communicate",
+ #      "valueType":"choice",
+ #      "valueChoices": [],
+ #      "valueStateId": PLUGIN_ID + ".state.socket.opened",
+ #      }
+}
 
 
