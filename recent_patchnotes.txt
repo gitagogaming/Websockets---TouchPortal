@@ -1,10 +1,6 @@
-V1.0.1 Updates:
+V1.0.3 Updates:
 
 ## General
-- Connections now stay connected until closed.
-- You can now have more than one websocket connected at a time by specifying a unique name
-- Each socket connected will have its own category created in plugin states for response & socket status
-- New state showing total sockets connected
-
-## New Actions:
-- Disconnect From Socket - Specify a socket to disconnect from
+Updated release for Cross Platform.. 
+Update is NOT required or needed for Windows users.  
+You must update to remove this notification though.
