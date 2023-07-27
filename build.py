@@ -41,7 +41,7 @@ PLUGIN_EXE_NAME: This defines what you want your plugin executable to be named. 
                 `pluginname + "_v" + version + "_" + os_name + ".tpp"`
                 If left blank, the file name from PLUGIN_MAIN is used (w/out .py extension).
 """
-PLUGIN_EXE_NAME = "Twitter_Plugin"
+PLUGIN_EXE_NAME = "Websockets_TP"
 
 """
 PLUGIN_EXE_ICON: This should be a path to a .ico file. However if png passed in, it will automatically converted to ico.
@@ -61,7 +61,7 @@ PLUGIN_ENTRY = "entry.tp"  # Here we just use the same file as the plugin's main
 PLUGIN_ENTRY_INDENT = 2
 
 """ This is the root folder name that will be inside of .tpp """
-PLUGIN_ROOT = "Twitter"
+PLUGIN_ROOT = "Websocket Plugin"
 
 """ Path to icon file used in entry.tp for category `imagepath`, if any. If left blank, TP will use a default icon. """
 PLUGIN_ICON = r""
