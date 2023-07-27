@@ -1,6 +1,6 @@
 {
   "sdk": 6,
-  "version": 102,
+  "version": 103,
   "name": "Websockets",
   "id": "gitago.websockets",
   "configuration": {
