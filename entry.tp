@@ -9,6 +9,8 @@
   },
   "plugin_start_cmd": "%TP_PLUGIN_FOLDER%Websocket Plugin\\Websockets_TP.exe",
   "plugin_start_cmd_windows": "%TP_PLUGIN_FOLDER%Websocket Plugin\\Websockets_TP.exe",
+   "plugin_start_cmd_linux": "sh %TP_PLUGIN_FOLDER%TwitchExtras//start.sh Websockets_TP",
+  "plugin_start_cmd_mac": "sh %TP_PLUGIN_FOLDER%TwitchExtras//start.sh Websockets_TP",
   "categories": [
     {
       "id": "gitago.websockets.main",

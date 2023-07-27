@@ -12,7 +12,9 @@ TP_PLUGIN_INFO = {
         "colorDark": "#222423",
         "colorLight": "#43a047"
     },
-    "plugin_start_cmd": "%TP_PLUGIN_FOLDER%Websocket Plugin\\Websockets_TP.exe"
+    "plugin_start_cmd": "%TP_PLUGIN_FOLDER%Websocket Plugin\\Websockets_TP.exe",
+    "plugin_start_cmd_linux": "sh %TP_PLUGIN_FOLDER%TwitchExtras//start.sh Websockets_TP",
+    "plugin_start_cmd_mac": "sh %TP_PLUGIN_FOLDER%TwitchExtras//start.sh Websockets_TP",
 }
 
 
