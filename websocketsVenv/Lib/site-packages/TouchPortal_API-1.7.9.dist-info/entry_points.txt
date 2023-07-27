@@ -1,0 +1,4 @@
+[console_scripts]
+tppbuild = TouchPortalAPI.tppbuild:main
+tppdoc = TouchPortalAPI.tppdoc:main
+tppsdk = TouchPortalAPI.sdk_tools:main
