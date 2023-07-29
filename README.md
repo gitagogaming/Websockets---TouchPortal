@@ -10,8 +10,6 @@
 This plugin allows TouchPortal to connect to a WebSocket & send a message, as well as processing responses.
 
 ### Description
-In its current form, the plugin is very basic. When the user sends a message, it initiates a connection to the websocket, sends the message, reveives the response then disconnected immediately after.
-
 By leveraging this plugin, you can extend the functionality of TouchPortal, allowing for a more interactive and customized experience.
 
 Please let me know if there's anything else I can assist you with!
