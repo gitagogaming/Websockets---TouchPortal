@@ -1,6 +1,6 @@
 {
   "sdk": 6,
-  "version": 103,
+  "version": 102,
   "name": "Websockets",
   "id": "gitago.websockets",
   "configuration": {
@@ -9,8 +9,8 @@
   },
   "plugin_start_cmd": "%TP_PLUGIN_FOLDER%Websocket Plugin\\Websockets_TP.exe",
   "plugin_start_cmd_windows": "%TP_PLUGIN_FOLDER%Websocket Plugin\\Websockets_TP.exe",
-   "plugin_start_cmd_linux": "sh %TP_PLUGIN_FOLDER%TwitchExtras//start.sh Websockets_TP",
-  "plugin_start_cmd_mac": "sh %TP_PLUGIN_FOLDER%TwitchExtras//start.sh Websockets_TP",
+  "plugin_start_cmd_linux": "sh %TP_PLUGIN_FOLDER%Websocket Plugin//start.sh Websockets_TP",
+  "plugin_start_cmd_mac": "sh %TP_PLUGIN_FOLDER%Websocket Plugin//start.sh Websockets_TP",
   "categories": [
     {
       "id": "gitago.websockets.main",
@@ -81,6 +81,30 @@
       "name": "Debug",
       "type": "text",
       "default": "False",
+      "readOnly": false
+    },
+    {
+      "name": "Autoconnect #1 Socket Name",
+      "type": "text",
+      "default": "",
+      "readOnly": false
+    },
+    {
+      "name": "Autoconnect #1 Socket URL",
+      "type": "text",
+      "default": "",
+      "readOnly": false
+    },
+    {
+      "name": "Autoconnect #2 Socket Name",
+      "type": "text",
+      "default": "",
+      "readOnly": false
+    },
+    {
+      "name": "Autoconnect #2 Socket URL",
+      "type": "text",
+      "default": "",
       "readOnly": false
     }
   ]

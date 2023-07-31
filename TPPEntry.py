@@ -1,10 +1,13 @@
 PLUGIN_ID = "gitago.websockets"
+PLUGIN_NAME = "Websockets_TP"
+PLUGIN_FOLDER = "Websocket Plugin"
+PLUGIN_ICON ="websockets_logo.png"
 
 
 
 TP_PLUGIN_INFO = {
     "sdk": 6,
-    "version": 102,
+    "version": 103,
     "name": "Websockets",
     "id": PLUGIN_ID,
     "plugin_start_cmd_windows": "%TP_PLUGIN_FOLDER%Websocket Plugin\\Websockets_TP.exe",
@@ -23,6 +26,26 @@ TP_PLUGIN_SETTINGS = {
     "1": {
         "name": "Debug",
         "default": "False",
+        "type": "text"
+    },
+    "2": {
+        "name": "Autoconnect #1 Socket Name",
+        "default": "",
+        "type": "text"
+    },
+    "3": {
+        "name": "Autoconnect #1 Socket URL",
+        "default": "",
+        "type": "text"
+    },
+    "4": {
+        "name": "Autoconnect #2 Socket Name",
+        "default": "",
+        "type": "text"
+    },
+    "5": {
+        "name": "Autoconnect #2 Socket URL",
+        "default": "",
         "type": "text"
     }
 }
@@ -89,7 +112,31 @@ TP_PLUGIN_ACTIONS = {
             }
         },
         "category": "main"
-    }
+    },
+  #  "3": {
+  #      ## connect to websocket
+  #      "id": PLUGIN_ID + ".act.connect",
+  #      "name": "Connect Websocket",
+  #      "prefix": "Prefix",
+  #      "type": "communicate",
+  #      "tryInline": True,
+  #      "description": "Connect to a Websocket.",
+  #      "format": "Websocket URL:$[1] with Socket Name:$[2]",
+  #      "data": {
+  #          "1": {
+  #              "id": PLUGIN_ID + ".act.connect.url",
+  #              "type": "text",
+  #              "label": "The IP and Port of the Websocket",
+  #              "default": "ws://localhost:9000"
+  #          },
+  #          "2": {
+  #              "id": PLUGIN_ID + ".act.connect.socket",
+  #              "type": "text",
+  #              "label": "The Socket Name",
+  #              "default": ""
+  #          }
+  #      }
+  #  }
 }
 
 

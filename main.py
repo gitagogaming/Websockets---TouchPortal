@@ -32,26 +32,31 @@ class SendMessage_Socket:
 
     def connect(self, socket_name, websocket_url):
          ## creating state for new socket
-        plugin.createState(stateId=PLUGIN_ID + f".state.response.{socket_name}", value="", description=f"WS | {socket_name} Websocket Response", parentGroup=socket_name)
-        plugin.createState(stateId=PLUGIN_ID + f".state.socket.{socket_name}.status", value="", description=f"WS | {socket_name} Websocket Status", parentGroup=socket_name)   
+        ws = self.websockets.get(socket_name)
+        if ws is None:
+            plugin.createState(stateId=PLUGIN_ID + f".state.response.{socket_name}", value="", description=f"WS | {socket_name} Websocket Response", parentGroup=socket_name)
+            plugin.createState(stateId=PLUGIN_ID + f".state.socket.{socket_name}.status", value="", description=f"WS | {socket_name} Websocket Status", parentGroup=socket_name)   
 
-        try:
-            ws = websocket.create_connection(websocket_url)
-            self.websockets[socket_name] = ws
-            plugin.log.info(f"WebSocket connection '{socket_name}' opened successfully.")
-            plugin.stateUpdate(stateId=PLUGIN_ID + ".state.sockets_open", stateValue=str(len(self.websockets)))
+            try:
+                ws = websocket.create_connection(websocket_url)
+                self.websockets[socket_name] = ws
+                plugin.log.info(f"WebSocket connection '{socket_name}' opened successfully.")
+                plugin.stateUpdate(stateId=PLUGIN_ID + ".state.sockets_open", stateValue=str(len(self.websockets)))
 
-            plugin.stateUpdate(stateId=PLUGIN_ID + f".state.socket.{socket_name}.status", stateValue="Connected")
-            plugin.stateUpdate(stateId=PLUGIN_ID + f".state.response.{socket_name}", stateValue="Socket Opened")  
-            return ws
-        except ConnectionRefusedError:
-            plugin.stateUpdate(stateId=PLUGIN_ID + f".state.socket.{socket_name}.status", stateValue="Disconnected")
-            plugin.stateUpdate(stateId=PLUGIN_ID + f".state.response.{socket_name}", stateValue="Failed to Connect, Connection Refused")
-            plugin.log.error("Connection was actively refused by the target machine.")
-            return "Connection was actively refused by the target machine."
-        except Exception as e:
-            plugin.log.error(f"Failed to open WebSocket '{socket_name}' due to: {str(e)}")
-            return
+                plugin.stateUpdate(stateId=PLUGIN_ID + f".state.socket.{socket_name}.status", stateValue="Connected")
+                plugin.stateUpdate(stateId=PLUGIN_ID + f".state.response.{socket_name}", stateValue="Socket Opened")  
+                return ws
+            except ConnectionRefusedError:
+                plugin.stateUpdate(stateId=PLUGIN_ID + f".state.socket.{socket_name}.status", stateValue="Disconnected")
+                plugin.stateUpdate(stateId=PLUGIN_ID + f".state.response.{socket_name}", stateValue="Failed to Connect, Connection Refused")
+                plugin.log.error("Connection was actively refused by the target machine.")
+                return "Connection was actively refused by the target machine."
+            except Exception as e:
+                plugin.log.error(f"Failed to open WebSocket '{socket_name}' due to: {str(e)}")
+                return
+        else:
+            plugin.log.error(f"WebSocket connection '{socket_name}' already open.")
+            return "WebSocket connection already open."
 
     def disconnect(self, socket_name):
         ws = self.websockets.get(socket_name)
@@ -80,11 +85,6 @@ class SendMessage_Socket:
         if ws is None:
             self.connect(socket_name, socket_url)
             ws = self.websockets.get(socket_name)
-
-        if ws is None:
-            plugin.log.error(f"WebSocket connection '{socket_name}' is not open. Must connect first.")
-            return
-
         command_json = json.loads(command)
         try:
             ws.send(json.dumps(command_json))
@@ -140,10 +140,20 @@ class ClientInterface(TouchPortalAPI.Client):
     """
     def onConnect(self, data):
         self.log.info(f"Connected to TP v{data.get('tpVersionString', '?')}, plugin v{data.get('pluginVersion', '?')}.")
-        self.log.debug(f"Connection: {data}")
         self.plugin_settings = self.settingsToDict(data["settings"])
         plugin.stateUpdate(stateId=PLUGIN_ID + ".state.sockets_open", stateValue="0")
             
+
+        try:
+            if self.plugin_settings.get("Autoconnect #1 Socket Name") != "":
+                WS.connect(socket_name=self.plugin_settings.get("Autoconnect #1 Socket Name"),
+                            websocket_url=self.plugin_settings.get("Autoconnect #1 Socket URL"))
+            if self.plugin_settings.get("Autoconnect #2 Socket Name") != "":
+                WS.connect(socket_name=self.plugin_settings.get("Autoconnect #2 Socket Name"),
+                           websocket_url=self.plugin_settings.get("Autoconnect #2 Socket URL"))
+        except Exception as e:
+            plugin.log.error(f"Failed to Autoconnect to Websockets due to: {str(e)}")
+
         ## Checking for Updates
         try:
             github_check, message = plugin_update_check(str(data['pluginVersion']))
@@ -184,6 +194,9 @@ class ClientInterface(TouchPortalAPI.Client):
         elif aid == PLUGIN_ID + ".act.disconnect":
             WS.disconnect(data['data'][0]['value'])
 
+       # not used yet elif aid == PLUGIN_ID + ".act.connect":
+       # not used yet     WS.connect(socket_name=data['data'][1]['value'], websocket_url=data['data'][0]['value'])
+
 
     def onNoticationClicked(data):
         if data['optionId'] == f'{PLUGIN_ID}.tp.update.download':
@@ -220,6 +233,7 @@ if __name__ == "__main__":
         plugin.log.error(f"Exception in TP Client:\n{format_exc()}")
         ret = -1
     finally:
+        WS.disconnect_all()
         plugin.disconnect()
         del plugin
         exit(ret)
