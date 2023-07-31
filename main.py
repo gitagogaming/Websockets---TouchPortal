@@ -9,6 +9,8 @@ import time
 import json
 import websocket
 
+from sys import exit
+
 ### Local Imports
 from update_check import plugin_update_check, GITHUB_PLUGIN_NAME, GITHUB_USER_NAME, PLUGIN_NAME
 
@@ -39,12 +41,14 @@ class SendMessage_Socket:
 
             try:
                 ws = websocket.create_connection(websocket_url)
+                self.server_hello = json.loads(ws.recv())
+               # print(self.server_hello)
                 self.websockets[socket_name] = ws
                 plugin.log.info(f"WebSocket connection '{socket_name}' opened successfully.")
                 plugin.stateUpdate(stateId=PLUGIN_ID + ".state.sockets_open", stateValue=str(len(self.websockets)))
 
                 plugin.stateUpdate(stateId=PLUGIN_ID + f".state.socket.{socket_name}.status", stateValue="Connected")
-                plugin.stateUpdate(stateId=PLUGIN_ID + f".state.response.{socket_name}", stateValue="Socket Opened")  
+                plugin.stateUpdate(stateId=PLUGIN_ID + f".state.response.{socket_name}", stateValue=str(self.server_hello))
                 return ws
             except ConnectionRefusedError:
                 plugin.stateUpdate(stateId=PLUGIN_ID + f".state.socket.{socket_name}.status", stateValue="Disconnected")
