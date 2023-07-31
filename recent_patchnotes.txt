@@ -1,5 +1,7 @@
-V1.0.4 Updates:
+
+V1.0.4 - v1.0.5 Updates:
 Auto Connect feature added to plugin settings.
+Resolved shutdown issue.
 
 V1.0.3 Updates:
 Updated release for Cross Platform.. 
