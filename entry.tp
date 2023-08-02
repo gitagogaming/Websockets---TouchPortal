@@ -1,6 +1,6 @@
 {
   "sdk": 6,
-  "version": 105,
+  "version": 106,
   "name": "Websockets",
   "id": "gitago.websockets",
   "configuration": {
@@ -14,8 +14,8 @@
   "categories": [
     {
       "id": "gitago.websockets.main",
-      "name": "Websockets Main Category",
-      "imagepath": "%TP_PLUGIN_FOLDER%Websocket Plugin\\Websockets_Logo.png",
+      "name": "Websockets",
+      "imagepath": "%TP_PLUGIN_FOLDER%Websocket Plugin\\websockets_logo.png.png",
       "actions": [
         {
           "id": "gitago.websockets.act.send_message",
@@ -62,6 +62,64 @@
               "default": ""
             }
           ]
+        },
+        {
+          "id": "gitago.websockets.act.register_event",
+          "name": "Register SocketIO Event",
+          "prefix": "Prefix",
+          "type": "communicate",
+          "description": "Register a SocketIO Event - URL ",
+          "format": "Websocket Event Name:{$gitago.websockets.act.register_event.event$} with Socket Name:{$gitago.websockets.act.register_event.socket$}, Socket URL:{$gitago.websockets.act.register_event.url$} and ParseData:{$gitago.websockets.act.register_event.parseData$}",
+          "tryInline": true,
+          "data": [
+            {
+              "id": "gitago.websockets.act.register_event.event",
+              "type": "text",
+              "label": "The Event Name",
+              "default": ""
+            },
+            {
+              "id": "gitago.websockets.act.register_event.socket",
+              "type": "text",
+              "label": "The Socket Name",
+              "default": ""
+            },
+            {
+              "id": "gitago.websockets.act.register_event.url",
+              "type": "text",
+              "label": "The IP and Port of the Websocket",
+              "default": "http://192.168.0.100:9000"
+            },
+            {
+              "id": "gitago.websockets.act.register_event.parseData",
+              "type": "text",
+              "label": "Parse Event",
+              "default": ""
+            }
+          ]
+        },
+        {
+          "id": "gitago.websockets.act.connect",
+          "name": "Connect Websocket",
+          "prefix": "Prefix",
+          "type": "communicate",
+          "description": "Connect to a Websocket.",
+          "format": "Websocket URL:{$gitago.websockets.act.connect.url$} with Socket Name:{$gitago.websockets.act.connect.socket$}",
+          "tryInline": true,
+          "data": [
+            {
+              "id": "gitago.websockets.act.connect.url",
+              "type": "text",
+              "label": "The IP and Port of the Websocket",
+              "default": "ws://localhost:9000"
+            },
+            {
+              "id": "gitago.websockets.act.connect.socket",
+              "type": "text",
+              "label": "The Socket Name",
+              "default": ""
+            }
+          ]
         }
       ],
       "states": [
@@ -84,25 +142,7 @@
       "readOnly": false
     },
     {
-      "name": "Autoconnect #1 Socket Name",
-      "type": "text",
-      "default": "",
-      "readOnly": false
-    },
-    {
-      "name": "Autoconnect #1 Socket URL",
-      "type": "text",
-      "default": "",
-      "readOnly": false
-    },
-    {
-      "name": "Autoconnect #2 Socket Name",
-      "type": "text",
-      "default": "",
-      "readOnly": false
-    },
-    {
-      "name": "Autoconnect #2 Socket URL",
+      "name": "Config File Location",
       "type": "text",
       "default": "",
       "readOnly": false

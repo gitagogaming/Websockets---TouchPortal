@@ -7,17 +7,17 @@ PLUGIN_ICON ="websockets_logo.png"
 
 TP_PLUGIN_INFO = {
     "sdk": 6,
-    "version": 105,
+    "version": 106,
     "name": "Websockets",
     "id": PLUGIN_ID,
-    "plugin_start_cmd_windows": "%TP_PLUGIN_FOLDER%Websocket Plugin\\Websockets_TP.exe",
+    "plugin_start_cmd_windows": f"%TP_PLUGIN_FOLDER%{PLUGIN_FOLDER}\\{PLUGIN_NAME}.exe",
     "configuration": {
         "colorDark": "#222423",
         "colorLight": "#43a047"
     },
-    "plugin_start_cmd": "%TP_PLUGIN_FOLDER%Websocket Plugin\\Websockets_TP.exe",
-    "plugin_start_cmd_linux": "sh %TP_PLUGIN_FOLDER%Websocket Plugin//start.sh Websockets_TP",
-    "plugin_start_cmd_mac": "sh %TP_PLUGIN_FOLDER%Websocket Plugin//start.sh Websockets_TP",
+    "plugin_start_cmd": f"%TP_PLUGIN_FOLDER%{PLUGIN_FOLDER}\\{PLUGIN_NAME}.exe",
+    "plugin_start_cmd_linux": f"sh %TP_PLUGIN_FOLDER%{PLUGIN_FOLDER}//start.sh {PLUGIN_NAME}",
+    "plugin_start_cmd_mac": f"sh %TP_PLUGIN_FOLDER%{PLUGIN_FOLDER}//start.sh {PLUGIN_NAME}",
 }
 
 
@@ -29,25 +29,10 @@ TP_PLUGIN_SETTINGS = {
         "type": "text"
     },
     "2": {
-        "name": "Autoconnect #1 Socket Name",
+        "name": "Config File Location",
         "default": "",
         "type": "text"
     },
-    "3": {
-        "name": "Autoconnect #1 Socket URL",
-        "default": "",
-        "type": "text"
-    },
-    "4": {
-        "name": "Autoconnect #2 Socket Name",
-        "default": "",
-        "type": "text"
-    },
-    "5": {
-        "name": "Autoconnect #2 Socket URL",
-        "default": "",
-        "type": "text"
-    }
 }
 
 
@@ -55,8 +40,8 @@ TP_PLUGIN_SETTINGS = {
 TP_PLUGIN_CATEGORIES = {
     "main": {
         "id": PLUGIN_ID + ".main",
-        "name": "Websockets Main Category",
-        "imagepath": "%TP_PLUGIN_FOLDER%Websocket Plugin\\Websockets_Logo.png"
+        "name": "Websockets",
+        "imagepath": f"%TP_PLUGIN_FOLDER%Websocket Plugin\\{PLUGIN_ICON}.png"
     }
 }
 
@@ -113,30 +98,93 @@ TP_PLUGIN_ACTIONS = {
         },
         "category": "main"
     },
-  #  "3": {
-  #      ## connect to websocket
-  #      "id": PLUGIN_ID + ".act.connect",
-  #      "name": "Connect Websocket",
-  #      "prefix": "Prefix",
-  #      "type": "communicate",
-  #      "tryInline": True,
-  #      "description": "Connect to a Websocket.",
-  #      "format": "Websocket URL:$[1] with Socket Name:$[2]",
-  #      "data": {
-  #          "1": {
-  #              "id": PLUGIN_ID + ".act.connect.url",
-  #              "type": "text",
-  #              "label": "The IP and Port of the Websocket",
-  #              "default": "ws://localhost:9000"
-  #          },
-  #          "2": {
-  #              "id": PLUGIN_ID + ".act.connect.socket",
-  #              "type": "text",
-  #              "label": "The Socket Name",
-  #              "default": ""
-  #          }
-  #      }
-  #  }
+    ## register socketio event
+    "3": {
+        "id": PLUGIN_ID + ".act.register_event",
+        "name": "Register SocketIO Event",
+        "prefix": "Prefix",
+        "type": "communicate",
+        "tryInline": True,
+        "description": "Register a SocketIO Event - URL ",
+        "format": "Websocket Event Name:$[1] with Socket Name:$[2], Socket URL:$[3] and ParseData:$[4]",
+        "data": {
+            "1": {
+                "id": PLUGIN_ID + ".act.register_event.event",
+                "type": "text",
+                "label": "The Event Name",
+                "default": ""
+            },
+            "2": {
+                "id": PLUGIN_ID + ".act.register_event.socket",
+                "type": "text",
+                "label": "The Socket Name",
+                "default": ""
+            },
+            "3": {
+                "id": PLUGIN_ID + ".act.register_event.url",
+                "type": "text",
+                "label": "The IP and Port of the Websocket",
+                "default": "http://192.168.0.100:9000"
+            },
+            "4": {
+                "id": PLUGIN_ID + ".act.register_event.parseData",
+                "type": "text",
+                "label": "Parse Event",
+                "default": ""
+            }
+        }
+    },
+
+  #  ## socket IO connect
+  # "3": {
+  #     "id": PLUGIN_ID + ".act.connectIO",
+  #     "name": "Connect SocketIO",
+  #     "prefix": "Prefix",
+  #     "type": "communicate",
+  #     "tryInline": True,
+  #     "description": "Connect to a SocketIO.",
+  #     "format": "SocketIO URL:$[1] with Socket Name:$[2]",
+  #     "data": {
+  #         "1": {
+  #             "id": PLUGIN_ID + ".act.connectIO.url",
+  #             "type": "text",
+  #             "label": "The IP and Port of the SocketIO",
+  #             "default": "http://localhost:9000"
+  #         },
+  #         "2": {
+  #             "id": PLUGIN_ID + ".act.connectIO.socket",
+  #             "type": "text",
+  #             "label": "The Socket Name",
+  #             "default": ""
+  #         }
+  #     },
+  #     "category": "main"
+  # },
+
+    "4": {
+        ## connect to websocket
+        "id": PLUGIN_ID + ".act.connect",
+        "name": "Connect Websocket",
+        "prefix": "Prefix",
+        "type": "communicate",
+        "tryInline": True,
+        "description": "Connect to a Websocket.",
+        "format": "Websocket URL:$[1] with Socket Name:$[2]",
+        "data": {
+            "1": {
+                "id": PLUGIN_ID + ".act.connect.url",
+                "type": "text",
+                "label": "The IP and Port of the Websocket",
+                "default": "ws://localhost:9000"
+            },
+            "2": {
+                "id": PLUGIN_ID + ".act.connect.socket",
+                "type": "text",
+                "label": "The Socket Name",
+                "default": ""
+            }
+        }
+    }
 }
 
 

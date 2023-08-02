@@ -1,3 +1,4 @@
 websocketsVenv
 *_LOG
 socketioWrapper.py
+*.spec
