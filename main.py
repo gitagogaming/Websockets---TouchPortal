@@ -1,8 +1,10 @@
 ## Websockets 
+
 import TouchPortalAPI
 from TouchPortalAPI import TYPES
 from TouchPortalAPI.logger import Logger
 from TPPEntry import TP_PLUGIN_ACTIONS, TP_PLUGIN_STATES, TP_PLUGIN_EVENTS, PLUGIN_ID
+
 import os
 import webbrowser
 import time
@@ -34,6 +36,7 @@ class WebSocketWrapper:
 
     def __init__(self):
         self.websockets = {}
+        self.count = 0
       #  GLOG = logging.getLogger(__name__)
 
     def connect(self, socket_name, websocket_url):
@@ -45,9 +48,9 @@ class WebSocketWrapper:
 
             try:
                 ws = websocket.create_connection(websocket_url)
-               # for OBS, dont think people need thistry:
+               # for OBS, dont think people need this   try:
                # for OBS, dont think people need this    self.server_hello = json.loads(ws.recv())
-               # for OBS, dont think people need thisexcept:
+               # for OBS, dont think people need this   except:
                # for OBS, dont think people need this    pass
 
                 self.websockets[socket_name] = ws
@@ -92,18 +95,35 @@ class WebSocketWrapper:
 
     def send_command(self, socket_name, socket_url, command):
         ws = self.websockets.get(socket_name)
+        self.count += 1
         if ws is None:
-          #  print(socket_name, socket_url)
-            self.connect(socket_name, socket_url)
-            ws = self.websockets.get(socket_name)
-
-        command_json = json.loads(command)
+            ws = self.connect(socket_name, socket_url)
         try:
-            ws.send(json.dumps(command_json))
-            response = ws.recv()
-            return json.loads(response)
+            # Try parsing command as JSON
+            command_json = json.loads(command)
+            command_to_send = json.dumps(command_json)
+        except json.JSONDecodeError:
+            # If parsing fails, send command as string
+            command_to_send = command
+
+        try:
+            # Send the command
+            ws.send(command_to_send)
+            ws.settimeout(0.1)
+
+            try:
+                # Receive the response
+                response = ws.recv()
+                 # Try parsing response as JSON
+                response_json = json.loads(response)
+                return response_json
+            except json.JSONDecodeError:
+                # If parsing fails, return response as is
+                return response
+                
+
         except Exception as e:
-            plugin.log.error(f"Failed to send command via WebSocket '{socket_name}' due to: {str(e)}")
+           plugin.log.error(f"Failed to send command via WebSocket '{socket_name}' due to: {str(e)}")
 
 
 
@@ -298,7 +318,7 @@ class ClientInterface(TouchPortalAPI.Client):
     def onAction(self, data):
         self.log.debug(f"Connection: {data}")
         plugin.log.debug(f"Action: {data}")
-        print(data)
+       # print(data)
         if not (action_data := data.get('data')) or not (aid := data.get('actionId')):
             return
         
@@ -307,10 +327,7 @@ class ClientInterface(TouchPortalAPI.Client):
             response = WS.send_command(socket_name=socket_name,
                                     socket_url=data['data'][0]['value'],
                                     command=data['data'][1]['value'])
-         #   print("The Response", response)      
             if response:
-                print("yea so why isnt it working")
-                print(PLUGIN_ID + f".state.response.{socket_name}", {str(response)})
                 plugin.createState(stateId=PLUGIN_ID + f".state.response.{socket_name}", value=str(response), description=f"WS | {socket_name} Websocket Response", parentGroup=data['data'][2]['value'])
             plugin.log.debug(f"Response: {response}")
 
@@ -318,13 +335,11 @@ class ClientInterface(TouchPortalAPI.Client):
             WS.disconnect(data['data'][0]['value'])
 
         elif aid == PLUGIN_ID + ".act.connect":
-            print("connect to websocket", data['data'][0]['value'])
             if data['data'][0]['value'].startswith("http"):
                 socketIO.connect(websocket_url=data['data'][0]['value'])
             elif data['data'][0]['value'].startswith("ws"):
                 WS.connect(socket_name=data['data'][1]['value'], websocket_url=data['data'][0]['value'])
 
-        ## elif register_event
         elif aid == PLUGIN_ID + ".act.register_event":
             socketIO.create_event(server_url=data['data'][2]['value'], 
                                   event_name=data['data'][0]['value'],
