@@ -7,7 +7,7 @@ PLUGIN_ICON ="websockets_logo.png"
 
 TP_PLUGIN_INFO = {
     "sdk": 6,
-    "version": 106,
+    "version": 107,
     "name": "Websockets",
     "id": PLUGIN_ID,
     "plugin_start_cmd_windows": f"%TP_PLUGIN_FOLDER%{PLUGIN_FOLDER}\\{PLUGIN_NAME}.exe",
