@@ -1,7 +1,20 @@
+V1.0.8
+- Fixed connection error caused by waiting for a response from the websocket server
+- Fixed bug caused by disconnecting & reconnecting to a program that had an active websocket connection and may have crashed/rebooted..
+- Fixed Update Notification onClick event
+- Added an Automatic Plugin Updater(User will get notified of new update, if accepted plugin will automatically download and install it)
+- Plugin Updater now checks for users system selected the proper download.
+- Fixed Plugin Icon for Actions
+- created a new class to handle all websocket communication
+- moved websocket classes into their own file
+**Full Changelog**: https://github.com/gitagogaming/Websockets---TouchPortal/compare/v1.0.7...v1.0.8
+
 V1.0.6
 SocketIO Support w/ events
 New Auto Connect Options
+**Full Changelog**: https://github.com/gitagogaming/Websockets---TouchPortal/compare/v1.0.5...v1.0.6
 
 V1.0.4 - v1.0.5 Updates:
 Auto Connect feature added to plugin settings.
 Resolved shutdown issue.
+**Full Changelog**: https://github.com/gitagogaming/Websockets---TouchPortal/compare/v1.0.4...v1.0.5
