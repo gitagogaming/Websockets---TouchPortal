@@ -1,193 +1,15 @@
 ## Websockets 
+import os
+import webbrowser
+import toml
+from sys import exit
 
 import TouchPortalAPI
 from TouchPortalAPI import TYPES
 from TouchPortalAPI.logger import Logger
-from TPPEntry import TP_PLUGIN_ACTIONS, TP_PLUGIN_STATES, TP_PLUGIN_EVENTS, PLUGIN_ID
-
-import os
-import webbrowser
-import time
-import json
-import websocket
-import toml
-#from socketioWrapper import IOSocketWrapper
-import socketio
-import toml
-
-from sys import exit
-
-### Local Imports
+from TPPEntry import PLUGIN_ID
 from update_check import plugin_update_check, GITHUB_PLUGIN_NAME, GITHUB_USER_NAME, PLUGIN_NAME
-
-
-TP_PATH = os.path.expandvars(rf'%APPDATA%\TouchPortal\plugins\{PLUGIN_NAME}')
-
-
-
-class WebSocketWrapper:
-    """
-    Sending Messages via Websocket.
-
-    Attributes:
-        websockets (dict): A dictionary of WebSocket connection objects.
-        logger (logging.Logger): The logger object for logging messages.
-    """
-
-    def __init__(self):
-        self.websockets = {}
-        self.count = 0
-      #  GLOG = logging.getLogger(__name__)
-
-    def connect(self, socket_name, websocket_url):
-         ## creating state for new socket
-        ws = self.websockets.get(socket_name)
-        if ws is None:
-            plugin.createState(stateId=PLUGIN_ID + f".state.response.{socket_name}", value="", description=f"WS | {socket_name} Websocket Response", parentGroup=socket_name)
-            plugin.createState(stateId=PLUGIN_ID + f".state.socket.{socket_name}.status", value="", description=f"WS | {socket_name} Websocket Status", parentGroup=socket_name)   
-
-            try:
-                ws = websocket.create_connection(websocket_url)
-               # for OBS, dont think people need this   try:
-               # for OBS, dont think people need this    self.server_hello = json.loads(ws.recv())
-               # for OBS, dont think people need this   except:
-               # for OBS, dont think people need this    pass
-
-                self.websockets[socket_name] = ws
-                plugin.log.info(f"WebSocket connection '{socket_name}' opened successfully.")
-                plugin.stateUpdate(stateId=PLUGIN_ID + ".state.sockets_open", stateValue=str(len(self.websockets)))
-
-                plugin.stateUpdate(stateId=PLUGIN_ID + f".state.socket.{socket_name}.status", stateValue="Connected")
-                return ws
-            except ConnectionRefusedError:
-                plugin.stateUpdate(stateId=PLUGIN_ID + f".state.socket.{socket_name}.status", stateValue="Disconnected")
-                plugin.stateUpdate(stateId=PLUGIN_ID + f".state.response.{socket_name}", stateValue="Failed to Connect, Connection Refused")
-                plugin.log.error("Connection was actively refused by the target machine.")
-                return "Connection was actively refused by the target machine."
-            except Exception as e:
-                plugin.log.error(f"Failed to open WebSocket '{socket_name}' due to: {str(e)}")
-                return
-        else:
-            plugin.log.error(f"WebSocket connection '{socket_name}' already open.")
-            return "WebSocket connection already open."
-
-    def disconnect(self, socket_name):
-        ws = self.websockets.get(socket_name)
-        if ws is not None:
-            ws.close()
-            del self.websockets[socket_name]
-            plugin.log.info(f"WebSocket connection '{socket_name}' closed successfully.")
-            plugin.stateUpdate(stateId=PLUGIN_ID + ".state.sockets_open", stateValue=str(len(self.websockets)))
-
-            ## updating and or creating state for socket status
-            plugin.stateUpdate(stateId=PLUGIN_ID + f".state.response.{socket_name}", stateValue="Socket Closed")
-            plugin.stateUpdate(stateId=PLUGIN_ID + f".state.socket.{socket_name}.status", stateValue="Disconnected")
-            return "WebSocket connection closed successfully."
-        else:
-            plugin.log.error(f"No WebSocket connection '{socket_name}' to close.")
-            return "No WebSocket connection to close."
-        
-    def disconnect_all(self):
-        for socket_name in list(self.websockets.keys()):
-            self.disconnect(socket_name)
-        plugin.log.info("All WebSocket connections closed successfully.")
-        return "All WebSocket connections closed successfully."
-
-    def send_command(self, socket_name, socket_url, command):
-        ws = self.websockets.get(socket_name)
-        self.count += 1
-        if ws is None:
-            ws = self.connect(socket_name, socket_url)
-        try:
-            # Try parsing command as JSON
-            command_json = json.loads(command)
-            command_to_send = json.dumps(command_json)
-        except json.JSONDecodeError:
-            # If parsing fails, send command as string
-            command_to_send = command
-
-        try:
-            # Send the command
-            ws.send(command_to_send)
-            ws.settimeout(0.1)
-
-            try:
-                # Receive the response
-                response = ws.recv()
-                 # Try parsing response as JSON
-                response_json = json.loads(response)
-                return response_json
-            except json.JSONDecodeError:
-                # If parsing fails, return response as is
-                return response
-                
-
-        except Exception as e:
-           plugin.log.error(f"Failed to send command via WebSocket '{socket_name}' due to: {str(e)}")
-
-
-
-
-
-class IOSocketWrapper:
-    def __init__(self):
-        self.event_handlers = {}  # Dictionary to store event names and their corresponding event handler functions
-        self.sio = socketio.Client()
-        self.servers = {}
-        self.websockets = {}
-
-    def get_server_details(self):
-        """
-        Return server details in dictionary format.
-        """
-        return self.servers
-
-    # def process_message(self, event_name, data):
-    #     """
-    #     Method to process the received WebSocket message based on the event name.
-    #     """
-    #     if event_name in self.event_handlers:
-    #         event_handler = self.event_handlers[event_name]
-    #         event_handler(data)
-
-    def send_message(self, server_name, data, event_name='update_event',):
-        """
-        Method to send a message to the server.
-
-        - need to create an action for this.. socketio specicially as we will need to specify event name, server url & data message
-        """
-      #  sio.emit('update_event', {'data': 'Hello from client'})
-        ws = self.websockets.get(server_name)
-        ws.emit(event_name, data)
-        #self.sio.emit(event_name, data)
-
-    def create_event(self, server_url, event_name, server_name, eventParse):
-        """
-        Function to create event handlers dynamically based on the server name, event name, and response key.
-        """
-        @self.sio.on(event_name)
-        def dynamic_event_handler(data):
-            if eventParse != "":
-                plugin.stateUpdate(stateId=PLUGIN_ID + f".state.response.{server_name}.{event_name}",
-                                stateValue=str(data[eventParse]))
-            else:
-                plugin.stateUpdate(stateId=PLUGIN_ID + f".state.response.{server_name}.{event_name}",
-                                stateValue=str(data))
-            plugin.log.debug(f"Received event '{event_name}' from server '{server_name}'.")
-            
-    def connect(self, websocket_url, server_name):
-        ws = self.websockets.get(server_name)
-        if ws is None:
-            ws = self.sio.connect(websocket_url)
-            # dont need this? but why.. im so confused...   because of when auto loads? for event_name in self.event_handlers:
-            # dont need this? but why.. im so confused...   because of when auto loads?     ws.on(event_name, self.event_handlers[event_name])  # Register event handlers with SocketIO
-            # dont need this? but why.. im so confused...   because of when auto loads?     plugin.log.debug(f"Registered event handler for event '{event_name} at {websocket_url}.")
-
-            self.websockets[server_name] = ws
-
-    def disconnect(self):
-        self.sio.disconnect()
-
+from websocketManager import WebSocketClient, IOSocketWrapper
 
 
 class ClientInterface(TouchPortalAPI.Client):
@@ -204,7 +26,7 @@ class ClientInterface(TouchPortalAPI.Client):
         # Log settings
         self.logLevel = "INFO"
 
-        self.setLogFile(PLUGIN_ID + "_LOG")
+        self.setLogFile(PLUGIN_ID + "_LOG.log")
     
         # Register events
         self.add_listener(TYPES.onConnect, self.onConnect)
@@ -216,13 +38,10 @@ class ClientInterface(TouchPortalAPI.Client):
 
 
 
-
-
-
     """
     Custom Method/Functions
     """
-    def settingsToDict(self, settings):
+    def settingsToDict(self, settings:dict):
         """ 
         Convert a list of settings to a dictionary
         """
@@ -255,10 +74,7 @@ class ClientInterface(TouchPortalAPI.Client):
                             websocket_url=server_url)
 
             socketIO.servers = config
-            #try:
-            #    socketIO.sio.wait()
-            #except KeyboardInterrupt:
-            #    socketIO.disconnect()
+
             return config
         except FileNotFoundError:
             plugin.log.debug(f"Error: Configuration file '{config_file}' not found.")
@@ -267,7 +83,7 @@ class ClientInterface(TouchPortalAPI.Client):
     """
     Events
     """
-    def onConnect(self, data):
+    def onConnect(self, data:dict):
         self.log.info(f"Connected to TP v{data.get('tpVersionString', '?')}, plugin v{data.get('pluginVersion', '?')}.")
         self.plugin_settings = self.settingsToDict(data["settings"])
 
@@ -283,15 +99,6 @@ class ClientInterface(TouchPortalAPI.Client):
 #
 
         plugin.stateUpdate(stateId=PLUGIN_ID + ".state.sockets_open", stateValue="0")
-     #  try:
-     #      if self.plugin_settings.get("Autoconnect #1 Socket Name") != "":
-     #          WS.connect(socket_name=self.plugin_settings.get("Autoconnect #1 Socket Name"),
-     #                      websocket_url=self.plugin_settings.get("Autoconnect #1 Socket URL"))
-     #      if self.plugin_settings.get("Autoconnect #2 Socket Name") != "":
-     #          WS.connect(socket_name=self.plugin_settings.get("Autoconnect #2 Socket Name"),
-     #                     websocket_url=self.plugin_settings.get("Autoconnect #2 Socket URL"))
-     #  except Exception as e:
-     #      plugin.log.error(f"Failed to Autoconnect to Websockets due to: {str(e)}")
 
         ## Checking for Updates
         try:
@@ -310,27 +117,21 @@ class ClientInterface(TouchPortalAPI.Client):
 
 
 
-    def onSettings(self, data):
+    def onSettings(self, data:dict):
         self.plugin_settings = self.settingsToDict(data['values'])
         self.log.debug(f"Connection: {data}")
 
 
-    def onAction(self, data):
+    def onAction(self, data:dict):
         self.log.debug(f"Connection: {data}")
         plugin.log.debug(f"Action: {data}")
-       # print(data)
+
         if not (action_data := data.get('data')) or not (aid := data.get('actionId')):
             return
         
         if aid == PLUGIN_ID + ".act.send_message":
-            socket_name = data['data'][2]['value']
-            response = WS.send_command(socket_name=socket_name,
-                                    socket_url=data['data'][0]['value'],
-                                    command=data['data'][1]['value'])
-            if response:
-                plugin.createState(stateId=PLUGIN_ID + f".state.response.{socket_name}", value=str(response), description=f"WS | {socket_name} Websocket Response", parentGroup=data['data'][2]['value'])
-            plugin.log.debug(f"Response: {response}")
-
+            WS.send_command(socket_name = data['data'][2]['value'], socket_url = data['data'][0]['value'], command = data['data'][1]['value'])
+            
         elif aid == PLUGIN_ID + ".act.disconnect":
             WS.disconnect(data['data'][0]['value'])
 
@@ -367,9 +168,9 @@ class ClientInterface(TouchPortalAPI.Client):
 
 
 if __name__ == "__main__":
-    WS = WebSocketWrapper()
     plugin = ClientInterface()
-    socketIO = IOSocketWrapper()
+    WS = WebSocketClient(plugin)
+    socketIO = IOSocketWrapper(plugin)
 
     plugin.log = Logger(name = PLUGIN_ID)
     ret = 0
