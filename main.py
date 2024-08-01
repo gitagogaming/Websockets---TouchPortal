@@ -8,8 +8,9 @@ import TouchPortalAPI
 from TouchPortalAPI import TYPES
 from TouchPortalAPI.logger import Logger
 from TPPEntry import PLUGIN_ID
-from update_check import plugin_update_check, GITHUB_PLUGIN_NAME, GITHUB_USER_NAME, PLUGIN_NAME
+# from update_check import plugin_update_check, GITHUB_PLUGIN_NAME, GITHUB_USER_NAME, PLUGIN_NAME
 from websocketManager import WebSocketClient, IOSocketWrapper
+from pluginUpdater import GitHubUpdater
 
 
 class ClientInterface(TouchPortalAPI.Client):
@@ -99,21 +100,29 @@ class ClientInterface(TouchPortalAPI.Client):
 #
 
         plugin.stateUpdate(stateId=PLUGIN_ID + ".state.sockets_open", stateValue="0")
+        
+        update_info = updater.check_for_updates("100")#str(data['pluginVersion']))
+        if update_info:
+            updater.show_update_notification(
+                notification_id=f"{PLUGIN_ID}.update",
+                title=f"Websockets {update_info['version']} is available",
+                msg="Download the latest version below",  
+            )
 
-        ## Checking for Updates
-        try:
-            github_check, message = plugin_update_check(str(data['pluginVersion']))
-            if github_check:
-                plugin.showNotification(
-                    notificationId= f"{PLUGIN_ID}.TP.Plugins.Update_Check",
-                    title=f"{PLUGIN_NAME} {github_check} is available",
-                    msg=f"A new version of {PLUGIN_NAME} is available and ready to Download.\nThis may include Bug Fixes and or New Features\n\nPatch Notes\n{message} ",
-                    options= [{
-                    "id":f"{PLUGIN_ID}.tp.update.download",
-                    "title":"Click to Update!"
-                }])
-        except:
-            print("Error Checking for Updates")
+        # ## Checking for Updates
+        # try:
+        #     github_check, message = plugin_update_check(str(data['pluginVersion']))
+        #     if github_check:
+        #         plugin.showNotification(
+        #             notificationId= f"{PLUGIN_ID}.TP.Plugins.Update_Check",
+        #             title=f"{PLUGIN_NAME} {github_check} is available",
+        #             msg=f"A new version of {PLUGIN_NAME} is available and ready to Download.\nThis may include Bug Fixes and or New Features\n\nPatch Notes\n{message} ",
+        #             options= [{
+        #             "id":f"{PLUGIN_ID}.tp.update.download",
+        #             "title":"Click to Update!"
+        #         }])
+        # except:
+        #     print("Error Checking for Updates")
 
 
 
@@ -147,12 +156,21 @@ class ClientInterface(TouchPortalAPI.Client):
                                  server_name=data['data'][1]['value'],
                                  eventParse=data['data'][3]['value'])
 
-
-    def onNoticationClicked(data):
-        if data['optionId'] == f'{PLUGIN_ID}.tp.update.download':
-            github_check = TouchPortalAPI.Tools.updateCheck(GITHUB_USER_NAME, GITHUB_PLUGIN_NAME)
-            url = f"https://github.com/{GITHUB_USER_NAME}/{GITHUB_PLUGIN_NAME}/releases/tag/{github_check}"
-            webbrowser.open(url, new=0, autoraise=True)
+    
+    def onNoticationClicked(self, data):
+        if data['optionId'] == updater.options[0]['id']:
+            if updater.update_info.get('downloadURL', None):
+                download_URL = updater.update_info['downloadURL']
+                plugin.log.info("Downloading the update...")
+                ## start download
+                updater.run_gui(download_URL)
+                  
+        elif data['optionId'] == updater.options[1]['id']:
+            if updater.update_info['htmlURL']:
+                webbrowser.open(updater.update_info['htmlURL'], new=0, autoraise=True)
+            else:
+                plugin.log.error("Error opening the download page, URL not found.", updater.update_info['htmlURL'])
+            pass
 
 
     ## When a Choice List is Changed in a Button Action
@@ -171,6 +189,8 @@ if __name__ == "__main__":
     plugin = ClientInterface()
     WS = WebSocketClient(plugin)
     socketIO = IOSocketWrapper(plugin)
+    updater = GitHubUpdater(owner='gitagogaming', repo='Websockets---TouchPortal', icon_path="websockets_logo.png", TPClient=plugin, pre_releases=False)
+
 
     plugin.log = Logger(name = PLUGIN_ID)
     ret = 0

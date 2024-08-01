@@ -15,7 +15,7 @@
     {
       "id": "gitago.websockets.main",
       "name": "Websockets",
-      "imagepath": "%TP_PLUGIN_FOLDER%Websocket Plugin\\websockets_logo.png.png",
+      "imagepath": "%TP_PLUGIN_FOLDER%Websocket Plugin\\websockets_logo.png",
       "actions": [
         {
           "id": "gitago.websockets.act.send_message",

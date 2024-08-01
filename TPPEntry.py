@@ -41,7 +41,7 @@ TP_PLUGIN_CATEGORIES = {
     "main": {
         "id": PLUGIN_ID + ".main",
         "name": "Websockets",
-        "imagepath": f"%TP_PLUGIN_FOLDER%Websocket Plugin\\{PLUGIN_ICON}.png"
+        "imagepath": f"%TP_PLUGIN_FOLDER%Websocket Plugin\\{PLUGIN_ICON}"
     }
 }
 
